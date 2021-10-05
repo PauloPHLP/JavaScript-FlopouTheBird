@@ -4,6 +4,7 @@ const ctx = cvs.getContext('2d');
 
 // Game variables and constants
 let frames = 0;
+const DEGREE = Math.PI / 180;
 
 //Game state.
 const state = {
@@ -79,6 +80,8 @@ const foreground = {
 	x: 0,
 	y: cvs.height - 112,
 
+	dx: 2,
+
 	draw: function () {
 		ctx.drawImage(
 			sprite,
@@ -104,6 +107,12 @@ const foreground = {
 			this.h
 		);
 	},
+
+	update: function () {
+		if (state.current === state.game) {
+			this.x = (this.x - this.dx) % (this.w / 2);
+		}
+	},
 };
 
 // Bird image.
@@ -122,8 +131,17 @@ const bird = {
 
 	frame: 0,
 
+	gravity: 0.25,
+	jump: 4.6,
+	speed: 0,
+	rotation: 0,
+
 	draw: function () {
 		let bird = this.animation[this.frame];
+
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.rotate(this.rotation);
 
 		ctx.drawImage(
 			sprite,
@@ -131,14 +149,55 @@ const bird = {
 			bird.sY,
 			this.w,
 			this.h,
-			this.x - this.w / 2,
-			this.y - this.h / 2,
+			-this.w / 2,
+			-this.h / 2,
 			this.w,
 			this.h
 		);
+
+		ctx.restore();
 	},
 
-	flap: function () {},
+	flap: function () {
+		this.speed = -this.jump;
+	},
+
+	update: function () {
+		// If the game state is Get Ready, the bird must flap slowly.
+		this.period = state.current === state.getReady ? 10 : 5;
+
+		// Increment the frame by one each period.
+		this.frame += frames % this.period === 0 ? 1 : 0;
+
+		// Frame goes from 0 to 4, then again to 0.
+		this.frame = this.frame % this.animation.length;
+
+		if (state.current === state.getReady) {
+			// Reset position of the bird after the game is over.
+			this.y = 150;
+
+			this.rotation = 0 * DEGREE;
+		} else {
+			this.speed += this.gravity;
+			this.y += this.speed;
+
+			if (this.y + this.h / 2 >= cvs.height - foreground.h) {
+				this.y = cvs.height - foreground.h - this.h / 2;
+
+				if (state.current === state.game) {
+					state.current = state.over;
+				}
+			}
+
+			// If the speed is greater than the jump, means that the bird is falling down.
+			if (this.speed >= this.jump) {
+				this.rotation = 90 * DEGREE;
+				this.frame = 1;
+			} else {
+				this.rotation = -25 * DEGREE;
+			}
+		}
+	},
 };
 
 // Get "Get Ready" message.
@@ -206,7 +265,10 @@ function draw() {
 }
 
 // Update elements positions on the Canvas.
-function update() {}
+function update() {
+	bird.update();
+	foreground.update();
+}
 
 // Calls all funcitions in loop.
 function loop() {
