@@ -1,4 +1,4 @@
-# 🖥️ JavaScript Flopou - The Bird
+# 🖥️ JavaScript Flopou The Bird
 
 <h1 align="center">
   <img src=".github/logo.png" width="200px" />
