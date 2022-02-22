@@ -6,7 +6,7 @@
 
 ## 🔎️ Description
 
-A Flappy Bird game made with HTML and JavaScript only.
+A Flappy Bird game copy made with HTML and JavaScript only.
 
 ## 🚀️ Technologies
 
