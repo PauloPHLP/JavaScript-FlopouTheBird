@@ -6,7 +6,7 @@
 
 ## 🔎️ Description
 
-Flappy Bird copy made with HTML and JavaScript.
+A Flappy Bird game copy made with HTML and JavaScript.
 
 ## 🚀️ Technologies
 
